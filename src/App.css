@@ -1,0 +1,443 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+:root {
+  --grass: #5ead44;
+  --wood-dark: #6d381f;
+  --stone: #7f8c8d;
+  --gold: #ffd700;
+  --chalk: #ecf0f1;
+  --terminal-green: #0f0;
+  --terminal-bg: #000;
+  --modal-overlay: rgba(0, 0, 0, 0.85);
+  --night-blue: rgba(10, 10, 50, 0.6);
+}
+
+body {
+  background-color: var(--grass);
+  background-image: linear-gradient(
+      rgba(255, 255, 255, 0.05) 2px,
+      transparent 2px
+    ),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 2px, transparent 2px);
+  background-size: 40px 40px;
+  font-family: 'Press Start 2P', cursive;
+  margin: 0;
+  color: white;
+  overflow: hidden;
+}
+
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* --- BARRA SUPERIOR --- */
+.top-bar {
+  background: rgba(0, 0, 0, 0.9);
+  padding: 10px 20px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  border-bottom: 4px solid var(--wood-dark);
+  height: 50px;
+  z-index: 100;
+}
+
+.mc-button {
+  background: var(--stone);
+  border: 4px solid #fff;
+  border-right-color: #555;
+  border-bottom-color: #555;
+  color: white;
+  font-family: 'Press Start 2P', cursive;
+  padding: 8px 10px;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-size: 9px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.mc-button:active {
+  transform: translateY(2px);
+  border-color: #555;
+  border-right-color: #fff;
+  border-bottom-color: #fff;
+}
+
+.mc-button.start {
+  background: #27ae60;
+}
+.mc-button.stop {
+  background: #c0392b;
+}
+.mc-button.class-mode {
+  background: #2980b9;
+}
+.mc-button.pro-mode {
+  background: #8e44ad;
+}
+.mc-button.concepts {
+  background: #e67e22;
+}
+
+.mc-button.active {
+  border-color: var(--gold);
+  filter: brightness(1.2);
+  box-shadow: 0 0 10px var(--gold);
+}
+
+/* --- ZONA DE JUEGO --- */
+.game-area {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 40px;
+  position: relative;
+}
+
+/* Cielo y Clima */
+.day-night-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--night-blue);
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 1s ease;
+  mix-blend-mode: multiply;
+}
+
+.celestial-body {
+  position: absolute;
+  top: 20px;
+  right: 50%;
+  transform: translateX(50%);
+  font-size: 60px;
+  z-index: 2;
+  transition: all 2s;
+  filter: drop-shadow(0 0 20px yellow);
+}
+
+.side-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 15px;
+  width: 130px;
+  z-index: 10;
+}
+
+.agent-house {
+  background: #e0c097;
+  border: 4px solid #5c4033;
+  padding: 6px;
+  text-align: center;
+  font-size: 8px;
+  color: #333;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  z-index: 10;
+}
+.agent-house.highlight {
+  transform: scale(1.15);
+  box-shadow: 0 0 20px var(--gold);
+  border-color: var(--gold);
+  z-index: 50;
+}
+.agent-house.producer {
+  background: #ffcccb;
+}
+.agent-house.consumer {
+  background: #cce5ff;
+}
+
+/* --- ANIMACIONES --- */
+.animation-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+.walker {
+  position: absolute;
+  top: 50%;
+  margin-top: -30px;
+  font-size: 50px;
+  filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.5));
+  transition: all 0.1s;
+}
+
+.walker.right {
+  left: 140px;
+  animation: moveRight 3s linear forwards;
+}
+@keyframes moveRight {
+  0% {
+    left: 140px;
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(5deg);
+  }
+  75% {
+    transform: rotate(-5deg);
+  }
+  100% {
+    left: calc(100% - 180px);
+    opacity: 0;
+  }
+}
+
+.walker.left {
+  right: 140px;
+  transform: scaleX(-1);
+  animation: moveLeft 3s linear forwards;
+}
+@keyframes moveLeft {
+  0% {
+    right: 140px;
+    transform: scaleX(-1) rotate(0deg);
+  }
+  25% {
+    transform: scaleX(-1) rotate(5deg);
+  }
+  75% {
+    transform: scaleX(-1) rotate(-5deg);
+  }
+  100% {
+    right: calc(100% - 180px);
+    opacity: 0;
+    transform: scaleX(-1);
+  }
+}
+
+.walker.wait-right {
+  right: 140px;
+}
+.walker.wait-left {
+  left: 140px;
+}
+
+.deal-popup {
+  position: absolute;
+  top: 40%;
+  padding: 5px;
+  background: #333;
+  color: var(--gold);
+  border: 2px solid white;
+  border-radius: 5px;
+  font-size: 16px;
+  animation: floatUp 2s forwards;
+  z-index: 20;
+}
+.deal-popup.right {
+  right: 180px;
+}
+.deal-popup.left {
+  left: 180px;
+}
+@keyframes floatUp {
+  100% {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+}
+
+/* --- DASHBOARD INFERIOR --- */
+.bottom-dashboard {
+  height: 200px;
+  background: #2c3e50;
+  border-top: 6px solid #95a5a6;
+  display: flex;
+  padding: 10px;
+  gap: 10px;
+  z-index: 50;
+}
+
+.panel-section {
+  border: 2px solid #7f8c8d;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+.panel-section.controls {
+  flex: 1;
+  justify-content: center;
+}
+.panel-section.chart {
+  flex: 1.5;
+  background: #000;
+  border-color: #555;
+  padding: 5px;
+  position: relative;
+}
+
+.panel-section.teacher {
+  flex: 3;
+  background: #222;
+  border-color: #8d6e63;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 15px;
+  position: relative;
+}
+.panel-section.teacher.pro-active {
+  background: var(--terminal-bg);
+  border-color: #8e44ad;
+  box-shadow: inset 0 0 20px rgba(142, 68, 173, 0.2);
+}
+
+.teacher-avatar {
+  font-size: 40px;
+  min-width: 50px;
+  text-align: center;
+  border-right: 1px solid #555;
+  padding-right: 10px;
+  margin-top: 5px;
+}
+.explanation-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
+  overflow: hidden;
+}
+.explanation-text {
+  font-family: monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--chalk);
+  overflow-y: auto;
+  padding-right: 5px;
+}
+.pro-text {
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  color: var(--terminal-green);
+  text-shadow: 0 0 3px var(--terminal-green);
+}
+
+.continue-btn {
+  align-self: flex-end;
+  background: transparent;
+  color: var(--terminal-green);
+  border: 2px solid var(--terminal-green);
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 5px 15px;
+  margin-top: 5px;
+  animation: blinkBorder 1.5s infinite;
+}
+.continue-btn:hover {
+  background: var(--terminal-green);
+  color: black;
+}
+@keyframes blinkBorder {
+  50% {
+    border-color: transparent;
+    color: #555;
+  }
+}
+
+.chart-svg {
+  width: 100%;
+  height: 100%;
+}
+.chart-line {
+  fill: none;
+  stroke: #2ecc71;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* --- MODAL DE CONCEPTOS --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--modal-overlay);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(5px);
+}
+
+.modal-content {
+  background: #2c3e50;
+  border: 6px solid #ecf0f1;
+  width: 80%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 20px;
+  color: white;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+  position: relative;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #7f8c8d;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+.modal-header h2 {
+  margin: 0;
+  color: var(--gold);
+  font-size: 20px;
+  text-shadow: 2px 2px black;
+}
+.close-btn {
+  background: #c0392b;
+  color: white;
+  border: 2px solid white;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 16px;
+}
+
+.concept-item {
+  margin-bottom: 20px;
+  border-left: 4px solid var(--gold);
+  padding-left: 15px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 10px;
+}
+.concept-title {
+  color: #f39c12;
+  font-size: 14px;
+  margin-bottom: 5px;
+  font-weight: bold;
+  display: block;
+}
+.concept-desc {
+  font-size: 10px;
+  line-height: 1.6;
+  font-family: monospace;
+  color: #ecf0f1;
+}
+.concept-analogy {
+  margin-top: 5px;
+  font-size: 10px;
+  color: #2ecc71;
+  font-style: italic;
+}
