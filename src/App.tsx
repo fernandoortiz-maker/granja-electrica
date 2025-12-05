@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
 import { TopBar } from './components/TopBar';
 import { GameArea } from './components/GameArea';
 import { BottomDashboard } from './components/BottomDashboard';
 import { ConceptModal } from './components/ConceptModal';
 import { useSimulation } from './hooks/useSimulation';
+import { useNarrator } from './hooks/useNarrator';
+import { SimulationMode } from './types';
 
 const App: React.FC = () => {
     const {
@@ -23,22 +25,40 @@ const App: React.FC = () => {
         sunIntensity,
         activeAnim,
         explanation,
+        narration,
         resumeSimulation,
     } = useSimulation();
 
+    const narrator = useNarrator({ rate: 1.0, pitch: 1.0 });
+
+    useEffect(() => {
+        if (narration && narrator.isEnabled && isPlaying) {
+            narrator.speak(narration);
+        }
+    }, [narration]);
+
+    useEffect(() => {
+        if (narrator.isEnabled && isPlaying) {
+            narrator.speakNow('Simulación iniciada.');
+        }
+    }, [isPlaying]);
+
+    const handleToggleMode = (newMode: SimulationMode) => {
+        setMode(mode === newMode ? 'none' : newMode);
+    };
+
     return (
         <div className="app-wrapper">
-            {/* 1. BARRA SUPERIOR */}
             <TopBar
                 isPlaying={isPlaying}
                 onTogglePlay={() => setIsPlaying(!isPlaying)}
                 mode={mode}
-                onToggleMode={(newMode) => setMode(mode === newMode ? 'none' : newMode)}
+                onToggleMode={handleToggleMode}
                 onShowConcepts={() => setShowConcepts(true)}
                 tick={tick}
+                narrator={narrator}
             />
 
-            {/* 2. AREA DE JUEGO */}
             <GameArea
                 sunIntensity={sunIntensity}
                 producers={producers}
@@ -47,7 +67,6 @@ const App: React.FC = () => {
                 highlightId={explanation.highlightId}
             />
 
-            {/* 3. DASHBOARD INFERIOR */}
             <BottomDashboard
                 mode={mode}
                 simSpeed={simSpeed}
@@ -57,8 +76,13 @@ const App: React.FC = () => {
                 priceHistory={priceHistory}
             />
 
-            {/* --- MODAL DE CONCEPTOS --- */}
             {showConcepts && <ConceptModal onClose={() => setShowConcepts(false)} />}
+
+            {narrator.isEnabled && narrator.isSpeaking && (
+                <div className="narrator-indicator">
+                    🔊 Narrando...
+                </div>
+            )}
         </div>
     );
 };

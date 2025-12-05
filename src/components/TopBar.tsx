@@ -1,6 +1,15 @@
 import React from 'react';
 import { SimulationMode } from '../types';
 
+interface NarratorControls {
+    isEnabled: boolean;
+    isSpeaking: boolean;
+    toggleNarrator: () => void;
+    voices: SpeechSynthesisVoice[];
+    selectedVoice: SpeechSynthesisVoice | null;
+    setSelectedVoice: (voice: SpeechSynthesisVoice) => void;
+}
+
 interface TopBarProps {
     isPlaying: boolean;
     onTogglePlay: () => void;
@@ -8,6 +17,7 @@ interface TopBarProps {
     onToggleMode: (mode: SimulationMode) => void;
     onShowConcepts: () => void;
     tick: number;
+    narrator: NarratorControls;
 }
 
 export const TopBar: React.FC<TopBarProps> = ({
@@ -17,6 +27,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     onToggleMode,
     onShowConcepts,
     tick,
+    narrator,
 }) => {
     return (
         <div className="top-bar">
@@ -41,6 +52,32 @@ export const TopBar: React.FC<TopBarProps> = ({
             <button className="mc-button concepts" onClick={onShowConcepts}>
                 💡 CONCEPTOS
             </button>
+
+            <button
+                className={`mc-button narrator ${narrator.isEnabled ? 'active' : ''}`}
+                onClick={narrator.toggleNarrator}
+                title={narrator.isEnabled ? 'Desactivar narrador' : 'Activar narrador'}
+            >
+                {narrator.isEnabled ? '🔊 NARRADOR' : '🔇 NARRADOR'}
+            </button>
+
+            {narrator.isEnabled && narrator.voices.length > 1 && (
+                <select
+                    className="voice-selector"
+                    value={narrator.selectedVoice?.name || ''}
+                    onChange={(e) => {
+                        const voice = narrator.voices.find(v => v.name === e.target.value);
+                        if (voice) narrator.setSelectedVoice(voice);
+                    }}
+                >
+                    {narrator.voices.map((voice) => (
+                        <option key={voice.name} value={voice.name}>
+                            {voice.lang} - {voice.name.slice(0, 20)}
+                        </option>
+                    ))}
+                </select>
+            )}
+
             <div
                 style={{
                     fontSize: '10px',
